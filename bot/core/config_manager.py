@@ -159,7 +159,7 @@ class Config:
     DRIVE_CATEGORY_MODE = False
     DRIVE_CATEGORY_SA = ""
     UPSTREAM_REPO = ""
-    UPSTREAM_BRANCH = "master"
+    UPSTREAM_BRANCH = "wzv3"
     USENET_SERVERS = []
     USER_SESSION_STRING = ""
     TRANSMISSION_MODE = "both"
@@ -337,6 +337,9 @@ class Config:
                 value = value.strip()
             if not value:
                 raise ValueError(f"{key} variable is missing!")
+
+
+DEFAULT_CONFIG = Config.get_all()
 
 
 class BinConfig:

@@ -57,7 +57,7 @@ from ..helper.ext_utils.bot_utils import (
     new_task,
     parse_dest,
 )
-from ..core.config_manager import Config
+from ..core.config_manager import Config, DEFAULT_CONFIG
 from ..core.tg_client import TgClient, db_partition_id
 from ..core.torrent_manager import TorrentManager
 from ..core.startup import update_qb_options, update_nzb_options, update_variables
@@ -85,7 +85,7 @@ DEFAULT_VALUES = {
     "RSS_DELAY": 600,
     "STATUS_UPDATE_INTERVAL": 15,
     "SEARCH_LIMIT": 0,
-    "UPSTREAM_BRANCH": "master",
+    "UPSTREAM_BRANCH": "wzv3",
     "DEFAULT_UPLOAD": "rc",
     "BOT_MAX_TASKS": 0,
     "QUEUE_ALL": 0,
@@ -116,16 +116,20 @@ BOOL_VARS = [
     "DISABLE_YTDLP",
     "DISABLE_MEGA",
     "DISABLE_PLUGINS",
+    "ENABLE_TELEMETRY",
     "EQUAL_SPLITS",
+    "GOFILE_AUTO_CREATE_FOLDER",
     "INC_TASK_NOTIFY",
     "INC_TASK_RESUME",
     "IS_TEAM_DRIVE",
     "MEDIA_GROUP",
     "MEDIA_STORE",
+    "MEM_DEEP_STATS",
     "SEEDR_DELETE_FOLDER",
     "SET_COMMANDS",
     "SHOW_CLOUD_LINK",
     "STOP_DUPLICATE",
+    "USE_HYPER",
     "USE_IMAGES",
     "USE_SERVICE_ACCOUNTS",
     "WEB_PINCODE",
@@ -1399,7 +1403,7 @@ async def edit_bot_settings(client, query):
         await update_buttons(message, data[1])
     elif data[1] == "resetvar":
         await query.answer()
-        value = ""
+        value = DEFAULT_CONFIG.get(data[2], "")
         if data[2] in (
             "IMAGES",
             "SEARCH_PLUGINS",
