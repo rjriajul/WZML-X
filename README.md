@@ -102,13 +102,7 @@ Deploy with Docker and provide the required configuration values. The container 
    docker buildx compose up -d
    ```
 
-   The bot runs behind a Cloudflare quick tunnel by default. Check the tunnel URL:
-
-   ```bash
-   docker compose logs tunnel
-   ```
-
-   You'll see a `https://*.trycloudflare.com` URL — that's your bot's web UI.
+   Web UI is on `http://<host>:8080`. Set `BASE_URL` in `config.py` to match.
 
    To stop:
 
@@ -129,7 +123,7 @@ Deploy with Docker and provide the required configuration values. The container 
    docker buildx compose up -d
    ```
 
-   All traffic (including the cloudflared tunnel) routes through the VPN.
+   All traffic routes through the VPN.
 </details>
 
 <details>
@@ -138,7 +132,7 @@ Deploy with Docker and provide the required configuration values. The container 
    Each bot needs its own `config.py` and data volumes. Example for a second bot:
 
    1. Create `config2.py` with different `BOT_TOKEN`, `OWNER_ID`, etc.
-   2. Uncomment `app2` and `tunnel2` in `docker-compose.yml`
+   2. Uncomment `app2` in `docker-compose.yml`
    3. Edit volume mounts to use `config2.py` and separate data dirs
    4. Start:
 
@@ -146,7 +140,7 @@ Deploy with Docker and provide the required configuration values. The container 
    docker buildx compose up -d
    ```
 
-   Each bot gets its own cloudflared tunnel URL. Admin ports (qBittorrent, SABnzbd) are mapped to different host ports (`127.0.0.1:8091`, etc.).
+   Each bot gets its own host port (`8080`, `8081`, etc.). Set `BASE_URL` in each config to match.
 </details>
 
 <details>

@@ -115,7 +115,6 @@ BOOL_VARS = [
     "DISABLE_TORRENTS",
     "DISABLE_YTDLP",
     "DISABLE_PLUGINS",
-    "ENABLE_TELEMETRY",
     "EQUAL_SPLITS",
     "GOFILE_AUTO_CREATE_FOLDER",
     "INC_TASK_NOTIFY",
@@ -296,7 +295,6 @@ DEFAULT_DESP = {
     "YT_TAGS": "Tags for YouTube uploads. List format.",
     "YT_CATEGORY_ID": "YouTube video category ID. Default: 22 (People & Blogs).",
     "PLUGIN_INDEXES": "Extra plugin index URLs on top of the official one. Each must be a JSON file holding a plugins list.",
-    "ENABLE_TELEMETRY": "Send crash reports to telemetry.wzmlx.com to help fix bugs. Default: True.",
     "YT_PRIVACY_STATUS": "YouTube upload privacy: public, unlisted, or private.",
 }
 

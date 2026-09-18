@@ -121,9 +121,6 @@ USER_TIME_INTERVAL = 0
 VERIFY_TIMEOUT = 0
 LOGIN_PASS = ""
 
-# Crash Reporting
-ENABLE_TELEMETRY = True  # Send crash reports to remote worker
-
 # Bot Settings
 BOT_PM = False
 SET_COMMANDS = True

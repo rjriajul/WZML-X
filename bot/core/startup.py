@@ -429,6 +429,3 @@ async def load_configurations():
 
         spawn_stream_server()
 
-    from ..helper.ext_utils.tunnel_monitor import apply_tunnel_url_once
-
-    await apply_tunnel_url_once()

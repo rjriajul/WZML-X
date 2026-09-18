@@ -1,6 +1,5 @@
 # ruff: noqa: E402
 
-import sys
 import faulthandler
 from sys import stderr
 from logging import FileHandler, getLogger
@@ -27,13 +26,6 @@ for _h in getLogger().handlers:
             pass
         break
 from .core.tg_client import TgClient
-from .helper.ext_utils.crash_reporter import (
-    send_unhandled_exception,
-    send_async_exception,
-)
-
-sys.excepthook = send_unhandled_exception
-
 _clean_task = None
 
 
@@ -131,7 +123,6 @@ def _handle_asyncio_exception(loop, context):
         if "unknown constructor" in msg_lower or "server sent an unknown" in msg_lower:
             LOGGER.warning(f"Pyrogram schema mismatch (tg side): {msg}")
             return
-    send_async_exception(context)
     loop.default_exception_handler(context)
 
 
@@ -156,10 +147,6 @@ try:
     bot_loop.run_until_complete(restart_notification())
 except Exception as e:
     LOGGER.error(f"restart_notification error: {e}")
-
-from .helper.ext_utils.tunnel_monitor import start_tunnel_monitor
-
-start_tunnel_monitor()
 
 from .core.plugin_manager import get_plugin_manager
 from .modules.plugin_manager import register_plugin_commands
