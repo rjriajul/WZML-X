@@ -26,7 +26,7 @@ pillow
 psutil
 pycountry
 pymongo
-wzgram
+git+https://github.com/rjriajul/wzgram
 python-magic
 pytz
 pyyaml
