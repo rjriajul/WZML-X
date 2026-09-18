@@ -35,10 +35,6 @@ HELPER_TOKENS = ""
 STREAM_TOKENS = ""
 USE_HYPER = True
 
-# MegaAPI v4.30
-MEGA_EMAIL = ""
-MEGA_PASSWORD = ""
-DISABLE_MEGA = False
 
 # Disable Options
 DISABLE_TORRENTS = False
@@ -70,7 +66,6 @@ AUTHOR_URL = "https://t.me/WZML_X"
 
 # Task Limits
 DIRECT_LIMIT = 0
-MEGA_LIMIT = 0
 TORRENT_LIMIT = 0
 GD_DL_LIMIT = 0
 RC_DL_LIMIT = 0

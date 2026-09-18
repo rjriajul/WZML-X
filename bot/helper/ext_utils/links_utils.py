@@ -1,6 +1,5 @@
 from re import match as re_match
 from base64 import urlsafe_b64decode, urlsafe_b64encode
-from urllib.parse import urlparse
 
 
 def is_magnet(url: str):
@@ -34,35 +33,6 @@ def is_telegram_link(url: str):
             "tg://openmessage?user_id=",
         )
     )
-
-
-def is_mega_link(url: str):
-    return urlparse(url).netloc.lower().removeprefix("www.") in (
-        "mega.nz",
-        "mega.co.nz",
-    )
-
-
-def is_mega_folder_link(link: str) -> bool:
-    if not link:
-        return False
-    return "/folder/" in link or "#F!" in link
-
-
-def get_mega_subfolder_handle(link: str) -> str | None:
-    if not link:
-        return None
-    parts = link.split("/folder/")
-    if len(parts) >= 3:
-        return parts[-1].split("#")[0].split("/")[0].split("?")[0]
-    parts = link.split("#F!")
-    if len(parts) >= 3:
-        return parts[-1].split("!")[0].split("/")[0].split("?")[0]
-    return None
-
-
-def get_mega_link_type(url):
-    return "folder" if "folder" in url or "/#F!" in url else "file"
 
 
 def is_share_link(url: str):

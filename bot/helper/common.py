@@ -50,7 +50,6 @@ from .ext_utils.links_utils import (
     is_gdrive_link,
     is_rclone_path,
     is_telegram_link,
-    is_mega_link,
 )
 from .ext_utils.media_utils import (
     FFMpeg,
@@ -120,7 +119,6 @@ class TaskConfig:
         self.is_leech = False
         self.is_yt = False
         self.is_qbit = False
-        self.is_mega = False
         self.is_nzb = False
         self.is_seedr = False
         self.is_jd = False
@@ -205,14 +203,13 @@ class TaskConfig:
                 )
             )
 
-        out_mode = f"#{'Leech' if self.is_leech else 'UphosterUpload' if self.is_uphoster else 'Clone' if self.is_clone else 'Mega' if self.up_dest in ('mega', 'mega:') else 'RClone' if self.up_dest.startswith('mrcc:') or is_rclone_path(self.up_dest) else 'GDrive' if self.up_dest.startswith(('mtp:', 'tp:', 'sa:')) or is_gdrive_id(self.up_dest) else 'UpHosters'}"
+        out_mode = f"#{'Leech' if self.is_leech else 'UphosterUpload' if self.is_uphoster else 'Clone' if self.is_clone else 'RClone' if self.up_dest.startswith('mrcc:') or is_rclone_path(self.up_dest) else 'GDrive' if self.up_dest.startswith(('mtp:', 'tp:', 'sa:')) or is_gdrive_id(self.up_dest) else 'UpHosters'}"
         out_mode += " (Zip)" if self.compress else " (Unzip)" if self.extract else ""
 
         self.is_rclone = is_rclone_path(self.link)
         self.is_gdrive = is_gdrive_link(self.source_url) if self.source_url else False
-        self.is_mega = is_mega_link(self.link) if self.source_url else False
 
-        in_mode = f"#{'Seedr' if self.is_seedr else 'Mega' if self.is_mega else 'qBit' if self.is_qbit else 'SABnzbd' if self.is_nzb else 'JDown' if self.is_jd else 'RCloneDL' if self.is_rclone else 'ytdlp' if self.is_ytdlp else 'TgMedia' if self.is_tg_clone else 'GDrive' if (self.is_clone or self.is_gdrive) else 'Aria2' if (self.source_url and self.source_url != self.message.link) else 'TgMedia'}"
+        in_mode = f"#{'Seedr' if self.is_seedr else 'qBit' if self.is_qbit else 'SABnzbd' if self.is_nzb else 'JDown' if self.is_jd else 'RCloneDL' if self.is_rclone else 'ytdlp' if self.is_ytdlp else 'TgMedia' if self.is_tg_clone else 'GDrive' if (self.is_clone or self.is_gdrive) else 'Aria2' if (self.source_url and self.source_url != self.message.link) else 'TgMedia'}"
 
         self.mode = (in_mode, out_mode)
 
@@ -462,11 +459,6 @@ class TaskConfig:
                     or self.up_dest == "gd"
                 ):
                     self.up_dest = self.user_dict.get("GDRIVE_ID") or Config.GDRIVE_ID
-                elif not self.is_uphoster and (
-                    (not self.up_dest and default_upload == "mega")
-                    or self.up_dest == "mega"
-                ):
-                    self.up_dest = "mega:"
 
                 if self.is_uphoster and not self.up_dest:
                     uphoster_service = self.user_dict.get("UPHOSTER_SERVICE", "gofile")
@@ -501,8 +493,6 @@ class TaskConfig:
                     ("mtp:", "tp:", "sa:")
                 ) and self.user_dict.get("USER_TOKENS", False):
                     self.up_dest = f"mtp:{self.up_dest}"
-            elif self.up_dest == "mega:":
-                pass
             elif is_rclone_path(self.up_dest):
                 if not self.up_dest.startswith("mrcc:") and self.user_dict.get(
                     "USER_TOKENS", False
@@ -514,11 +504,7 @@ class TaskConfig:
             else:
                 raise ValueError("Wrong Upload Destination!")
 
-            if (
-                self.up_dest not in ["rcl", "gdl"]
-                and not self.is_uphoster
-                and self.up_dest != "mega:"
-            ):
+            if self.up_dest not in ["rcl", "gdl"] and not self.is_uphoster:
                 await self.is_token_exists(self.up_dest, "up")
 
             if self.up_dest == "rcl":
@@ -886,6 +872,7 @@ class TaskConfig:
             walk, self.up_dir or self.dir, topdown=False
         ):
             code = 0
+            extracted = False
             for file_ in files:
                 if self.is_cancelled:
                     return False
@@ -899,10 +886,11 @@ class TaskConfig:
                     t_path = get_base_name(f_path) if self.is_file else dirpath
                     if not self.is_file:
                         self.subname = file_
-                    code = await sevenz.extract(f_path, t_path, pswd)
+                    code = await sevenz.extract(f_path, t_path, pswd) or code
+                    extracted = True
             if self.is_cancelled:
                 return code
-            if code == 0:
+            if extracted and code == 0:
                 for file_ in files:
                     if is_archive_split(file_) or is_archive(file_):
                         del_path = ospath.join(dirpath, file_)

@@ -27,7 +27,6 @@ from ..helper.ext_utils.bot_utils import (
     update_user_ldata,
 )
 from ..helper.ext_utils.db_handler import database
-from ..helper.ext_utils.mega_utils import get_mega_account_info
 from ..helper.ext_utils.media_utils import create_thumb
 from ..helper.ext_utils.filter_utils import compile_pattern
 from ..helper.ext_utils.session_crypt import SessionCrypt, SessionCryptError
@@ -102,7 +101,6 @@ ytdlp_options = [
     "YT_CATEGORY_ID",
     "YT_PRIVACY_STATUS",
 ]
-mega_options = ["MEGA_EMAIL", "MEGA_PASSWORD"]
 seedr_options = ["SEEDR_EMAIL", "SEEDR_PASSWORD", "SEEDR_DELETE_FOLDER"]
 
 user_settings_text = {
@@ -382,16 +380,6 @@ Here I will explain how to use mltb.* which is reference to files you want to wo
         "String",
         "VikingFile folder name/path. Leave empty to upload to root.",
         "<i>Send your VikingFile folder name/path. Leave empty to upload to root.</i> \n┖ <b>Time Left :</b> <code>60 sec</code>",
-    ),
-    "MEGA_EMAIL": (
-        "String",
-        "Your Mega.nz account email for per-user Mega downloads & uploads.",
-        "<i>Send your Mega.nz email address.</i> \n┖ <b>Time Left :</b> <code>60 sec</code>",
-    ),
-    "MEGA_PASSWORD": (
-        "String",
-        "Your Mega.nz account password for per-user Mega downloads & uploads.",
-        "<i>Send your Mega.nz account password.</i> \n┖ <b>Time Left :</b> <code>60 sec</code>",
     ),
     "SEEDR_EMAIL": (
         "String",
@@ -954,7 +942,6 @@ async def get_user_settings(from_user, stype="main"):
         else:
             sd_msg = "Disabled"
 
-        buttons.data_button("Mega Tools", f"userset {user_id} mega")
         if not Config.DISABLE_SEEDR:
             buttons.data_button("Seedr Tools", f"userset {user_id} seedr")
         if Config.DRIVE_CATEGORY_MODE:
@@ -975,49 +962,6 @@ async def get_user_settings(from_user, stype="main"):
 ┃
 ┖ <b>Bot Stop Duplicate</b> → <b>{sd_msg}</b>
 """
-
-    elif stype == "mega":
-        mega_email = user_dict.get("MEGA_EMAIL", "")
-        mega_password = user_dict.get("MEGA_PASSWORD", "")
-        has_creds = bool(mega_email and mega_password)
-        masked_pass = (
-            (
-                mega_password[:2] + "*" * (len(mega_password) - 4) + mega_password[-2:]
-                if len(mega_password) > 6
-                else "****"
-            )
-            if mega_password
-            else ""
-        )
-
-        buttons.data_button("Mega Email", f"userset {user_id} menu MEGA_EMAIL")
-        if mega_email:
-            buttons.data_button(
-                "Mega Password", f"userset {user_id} menu MEGA_PASSWORD"
-            )
-
-        if has_creds:
-            buttons.data_button(
-                "Remove Account",
-                f"userset {user_id} remove MEGA_EMAIL",
-                position="l_body",
-            )
-
-        buttons.data_button("Back", f"userset {user_id} back mirror", "footer")
-        buttons.data_button(
-            "Close", f"userset {user_id} close", "footer", style=ButtonStyle.DANGER
-        )
-        btns = buttons.build_menu(1)
-
-        email_display = mega_email or "Not Set"
-        pass_display = masked_pass if mega_password else "Not Set"
-        account_status = "✓ Configured" if has_creds else "❌ Not Configured"
-        text = f"""⌬ <b>Mega Tools :</b>
-┟ <b>Name</b> → {user_name}
-┃
-┠ <b>Mega Email</b> → <code>{email_display}</code>
-┠ <b>Mega Password</b> → <code>{pass_display}</code>
-┖ <b>Account</b> → {account_status}"""
 
     elif stype == "seedr":
         seedr_email = user_dict.get("SEEDR_EMAIL", "")
@@ -1762,8 +1706,6 @@ async def get_menu(option, message, user_id):
         back_to = "advanced"
     elif option in uphoster_options:
         back_to = option.split("_")[0].lower()
-    elif option in mega_options:
-        back_to = "mega"
     elif option in seedr_options:
         back_to = "seedr"
     elif option in clone_options:
@@ -1900,7 +1842,6 @@ _USERS_DUMP_SKIP = {
     "USER_SESSION",
     "usess",
     "VERIFY_TOKEN",
-    "MEGA_PASSWORD",
     "SEEDR_PASSWORD",
 }
 
@@ -1994,16 +1935,6 @@ async def edit_user_settings(client, query):
     ]:
         await query.answer()
         await update_user_settings(query, data[2])
-    elif data[2] == "mega":
-        await query.answer()
-        msg, button = await get_user_settings(query.from_user, "mega")
-        await edit_message(message, msg, button)
-        mega_email = user_dict.get("MEGA_EMAIL", "")
-        mega_password = user_dict.get("MEGA_PASSWORD", "")
-        if mega_email and mega_password:
-            info_text = await get_mega_account_info(mega_email, mega_password)
-            msg += f"\n\n{info_text}"
-            await edit_message(message, msg, button)
     elif data[2] == "seedr":
         await query.answer()
         msg, button = await get_user_settings(query.from_user, "seedr")
@@ -2214,9 +2145,7 @@ async def edit_user_settings(client, query):
             await database.update_user_doc(user_id, data[3])
         else:
             update_user_ldata(user_id, data[3], "")
-            if data[3] == "MEGA_EMAIL":
-                update_user_ldata(user_id, "MEGA_PASSWORD", "")
-            elif data[3] == "SEEDR_EMAIL":
+            if data[3] == "SEEDR_EMAIL":
                 update_user_ldata(user_id, "SEEDR_PASSWORD", "")
             await database.update_user_data(user_id)
         await get_menu(data[3], message, user_id)

@@ -33,7 +33,6 @@ class Config:
     DISABLE_MULTI = False
     DISABLE_SEED = False
     DISABLE_FF_MODE = False
-    DISABLE_MEGA = False
     DISABLE_PLUGINS = False
     DISABLE_JD = True
     DISABLE_NZB = True
@@ -76,13 +75,10 @@ class Config:
     IS_TEAM_DRIVE = False
     JD_EMAIL = ""
     JD_PASS = ""
-    MEGA_EMAIL = ""
-    MEGA_PASSWORD = ""
     SEEDR_EMAIL = ""
     SEEDR_PASSWORD = ""
     SEEDR_DELETE_FOLDER = False
     DIRECT_LIMIT = 0
-    MEGA_LIMIT = 0
     TORRENT_LIMIT = 0
     GD_DL_LIMIT = 0
     RC_DL_LIMIT = 0
